@@ -31,6 +31,11 @@ data:
       index index.html index.htm index.php;
 
       default_type application/octet-stream;
+
+      upstream hello_world_com {
+        server helloworld:3000 weight=5;
+      }
+
       server {
             listen 8080 default_server;
             listen [::]:8080 default_server ipv6only=on;
@@ -42,12 +47,19 @@ data:
             }
 
             #error_page  404              /404.html;
-
             # redirect server error pages to the static page /50x.html
             #
             error_page   500 502 503 504  /50x.html;
             location = /50x.html {
                 root   /usr/share/nginx/html;
+            }
+
+            location /helloworld {
+              proxy_pass      http://hello_world_com/;
+            }
+
+            location /helloworld/ping {
+              proxy_pass      http://hello_world_com/ping;
             }
         }
     }
